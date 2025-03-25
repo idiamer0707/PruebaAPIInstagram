@@ -32,6 +32,7 @@
             await obtenerMetricas(result.access_token);
         } else {
             console.error('Error al obtener el token de acceso:', result);
+            document.getElementById('output').innerText = 'Ocurrió un error al obtener el token.';
         }
     } catch (error) {
         console.error('Error al intercambiar el código:', error);
