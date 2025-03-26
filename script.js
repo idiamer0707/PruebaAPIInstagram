@@ -22,11 +22,13 @@ if (authCode) {
 async function intercambiarPorToken(authCode) {
     const data = {
         client_id: clientId,
-        client_secret: 'e88790e677018b2ae062308cfea7eb5c', // ¡Solo para pruebas! Este client_secret debe ir al servidor en producción.
+        client_secret: 'e88790e677018b2ae062308cfea7eb5c', 
         grant_type: 'authorization_code',
         redirect_uri: redirectUri,
         code: authCode
     };
+
+    console.log('Datos enviados:', data);
 
     try {
         const response = await fetch('https://graph.facebook.com/v12.0/oauth/access_token', {
@@ -38,11 +40,11 @@ async function intercambiarPorToken(authCode) {
         });
 
         const result = await response.json();
-        if (result.access_token) {
+        if (response.ok && result.access_token) {
             console.log('Token de acceso obtenido:', result.access_token);
             obtenerMetricas(result.access_token);
         } else {
-            console.error('Error al obtener el token de acceso:', result);
+            console.error('Error en la respuesta de la API:', result.error || result);
         }
     } catch (error) {
         console.error('Error al intercambiar el código por el token:', error);
