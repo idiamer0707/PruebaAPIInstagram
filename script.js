@@ -47,8 +47,9 @@ function obtenerMetricas(accessToken) {
                     }
                 );
             } else {
-                console.error('No se encontró una cuenta de Instagram vinculada');
                 document.getElementById('followers').innerText = `No se encontro cuenta vinculada`;
+                console.error('No se encontró una cuenta de Instagram vinculada');
+                
             }
         }
     );
