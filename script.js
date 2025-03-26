@@ -16,6 +16,7 @@ function iniciarSesionInstagram() {
             console.log('Usuario autenticado:', response.authResponse);
             const accessToken = response.authResponse.accessToken;
 
+            // Llama a la función para obtener métricas
             obtenerMetricas(accessToken);
         } else {
             console.error('Error en la autenticación');
@@ -36,6 +37,6 @@ function obtenerMetricas(accessToken) {
     });
 }
 
-
+// Agregar evento al botón
 document.getElementById('loginButton').addEventListener('click', iniciarSesionInstagram);
 
