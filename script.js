@@ -3,7 +3,7 @@ const redirectUri = 'https://idiamer0707.github.io/PruebaAPIInstagram/';
 
 // Redirigir al usuario a Instagram para iniciar sesión
 document.getElementById('loginButton').addEventListener('click', () => {
-    const authUrl = `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user_profile&response_type=code`;
+    const authUrl = `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=instagram_basic&response_type=code`;
     window.location.href = authUrl;
 });
 
