@@ -1,62 +1,72 @@
+const clientId = '1010459561182497'; 
+const redirectUri = 'https://idiamer0707.github.io/PruebaAPIInstagram/'; 
 
-// Inicialización del SDK de Facebook/Instagram
-window.fbAsyncInit = function() {
-    FB.init({
-        appId: '1010459561182497', 
-        cookie: true,
-        xfbml: true,
-        version: 'v12.0' 
-    });
-    console.log('SDK de Instagram inicializado correctamente');
-};
+// Redirigir al usuario a Instagram para iniciar sesión
+document.getElementById('loginButton').addEventListener('click', () => {
+    const authUrl = `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user_profile&response_type=code`;
+    window.location.href = authUrl;
+});
 
-// Función para iniciar sesión y autenticar al usuario
-function iniciarSesionInstagram() {
-    FB.login(function(response) {
-        if (response.authResponse) {
-            console.log('Usuario autenticado:', response.authResponse);
-            const accessToken = response.authResponse.accessToken;
+// Captura el código de autorización desde la URL
+const queryParams = new URLSearchParams(window.location.search);
+const authCode = queryParams.get('code');
 
-            obtenerMetricas(accessToken);
+if (authCode) {
+    console.log('Código de autorización obtenido:', authCode);
+    intercambiarPorToken(authCode); 
+} else {
+    console.log('No se encontró el código de autorización. Es posible que el usuario no haya autorizado la app.');
+}
+
+// Intercambiar el código por un token de acceso 
+async function intercambiarPorToken(authCode) {
+    const data = {
+        client_id: clientId,
+        client_secret: 'e88790e677018b2ae062308cfea7eb5c', 
+        grant_type: 'authorization_code',
+        redirect_uri: redirectUri,
+        code: authCode
+    };
+
+    try {
+        const response = await fetch('https://api.instagram.com/oauth/access_token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams(data)
+        });
+
+        const result = await response.json();
+        if (result.access_token) {
+            console.log('Token de acceso obtenido:', result.access_token);
+            obtenerMetricas(result.access_token);
         } else {
-            console.error('Error en la autenticación');
+            console.error('Error al obtener el token de acceso:', result);
         }
-    }, { scope: 'instagram_basic' }); 
+    } catch (error) {
+        console.error('Error al intercambiar el código por el token:', error);
+    }
 }
 
-function obtenerMetricas(accessToken) {
-    FB.api(
-        '/me/accounts',
-        function(response) { // El SDK usará el token global automáticamente
-            if (response && response.data && response.data.length > 0) {
-                const instagramAccountId = response.data[0].id; // ID de la cuenta vinculada
+// Obtener métricas del usuario usando el token de acceso
+async function obtenerMetricas(accessToken) {
+    try {
+        const url = `https://graph.instagram.com/me?fields=followers_count,media_count&access_token=${accessToken}`;
+        const response = await fetch(url);
+        const data = await response.json();
 
-                // Ahora obtenemos las métricas
-                FB.api(
-                    `/${instagramAccountId}`,
-                    { fields: 'followers_count,media_count' }, // Sin especificar access_token
-                    function(instagramResponse) {
-                        if (instagramResponse) {
-                            console.log('Datos del usuario de Instagram:', instagramResponse);
+        if (data) {
+            console.log('Datos del usuario:', data);
 
-                            document.getElementById('followers').innerText = `Número de seguidores: ${instagramResponse.followers_count}`;
-                            document.getElementById('media').innerText = `Número de publicaciones: ${instagramResponse.media_count}`;
-                        } else {
-                            console.error('Error al obtener los datos de la cuenta de Instagram');
-                        }
-                    }
-                );
-            } else {
-                document.getElementById('followers').innerText = `No se encontro cuenta vinculada`;
-                console.error('No se encontró una cuenta de Instagram vinculada');
-                
-            }
+            document.getElementById('followers').innerText = `Número de seguidores: ${data.followers_count}`;
+            document.getElementById('media').innerText = `Número de publicaciones: ${data.media_count}`;
+        } else {
+            console.error('Error al obtener los datos del usuario:', data);
         }
-    );
+    } catch (error) {
+        console.error('Error al realizar la solicitud:', error);
+    }
 }
-
-
-// Agregar evento al botón
-document.getElementById('loginButton').addEventListener('click', iniciarSesionInstagram);
 
 
