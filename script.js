@@ -6,7 +6,6 @@ document.getElementById('loginButton').addEventListener('click', () => {
     const authUrl = `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=instagram_basic&response_type=code`;
     window.location.href = authUrl;
 });
-
 // Captura el código de autorización desde la URL
 const queryParams = new URLSearchParams(window.location.search);
 const authCode = queryParams.get('code');
