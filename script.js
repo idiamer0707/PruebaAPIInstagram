@@ -1,27 +1,3 @@
-// Inicialización del SDK de Facebook/Instagram
-window.fbAsyncInit = function() {
-    FB.init({
-        appId: '1010459561182497', 
-        cookie: true,
-        xfbml: true,
-        version: 'v12.0' 
-    });
-    console.log('SDK de Instagram inicializado correctamente');
-};
-
-// Función para iniciar sesión y autenticar al usuario
-function iniciarSesionInstagram() {
-    FB.login(function(response) {
-        if (response.authResponse) {
-            console.log('Usuario autenticado:', response.authResponse);
-            const accessToken = response.authResponse.accessToken;
-
-            obtenerMetricas(accessToken);
-        } else {
-            console.error('Error en la autenticación');
-        }
-    }, { scope: 'instagram_basic' }); 
-}
 
 // Inicialización del SDK de Facebook/Instagram
 window.fbAsyncInit = function() {
@@ -72,6 +48,7 @@ function obtenerMetricas(accessToken) {
                 );
             } else {
                 console.error('No se encontró una cuenta de Instagram vinculada');
+                document.getElementById('followers').innerText = `No se encontro cuenta vinculada`;
             }
         }
     );
