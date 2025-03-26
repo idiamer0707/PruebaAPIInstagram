@@ -3,17 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Buscar Cuenta de Instagram</title>
+  <title>Instagram API con SDK</title>
   <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 </head>
 <body>
   <h1>Prueba de la API de Instagram</h1>
-  <button id="mostrarDatos">Mostrar Datos</button>
-  <p id="output"></p>
-  <p id="followers"></p>
-  <p id="media"></p>
-  <p id="likes"></p>
-  <p id="comments"></p>
-  <script src="PruebaAPIIntagram.js"></script>
+  <button id="loginButton" style="padding: 10px 20px; background-color: #3897f0; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    Iniciar Sesión con Instagram
+  </button>
+  <div id="userData" style="margin-top: 20px;">
+    <p id="followers">Número de seguidores: -</p>
+    <p id="media">Número de publicaciones: -</p>
+  </div>
+
+  <!-- Vincula el archivo JavaScript -->
+  <script src="script.js"></script>
 </body>
-</html>
