@@ -16,13 +16,11 @@ function iniciarSesionInstagram() {
             console.log('Usuario autenticado:', response.authResponse);
             const accessToken = response.authResponse.accessToken;
 
-            // Llama a la función para obtener métricas
             obtenerMetricas(accessToken);
         } else {
             console.error('Error en la autenticación');
         }
-    }, { scope: 'instagram_basic' });
-}
+    }, { scope: 'instagram_basic' }); 
 
 function obtenerMetricas(accessToken) {
     FB.api('/me', { fields: 'followers_count,media_count' }, function(response) {
