@@ -21,7 +21,7 @@ function iniciarSesionInstagram() {
         } else {
             console.error('Error en la autenticación');
         }
-    }, { scope: 'instagram_basic,instagram_graph_user' });
+    }, { scope: 'instagram_basic' });
 }
 
 function obtenerMetricas(accessToken) {
