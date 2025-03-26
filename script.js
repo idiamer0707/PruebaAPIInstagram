@@ -3,9 +3,10 @@ const redirectUri = 'https://idiamer0707.github.io/PruebaAPIInstagram/';
 
 // Redirigir al usuario a Instagram para iniciar sesión
 document.getElementById('loginButton').addEventListener('click', () => {
-    const authUrl = `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=instagram_basic&response_type=code`;
+    const authUrl = `https://www.facebook.com/v12.0/dialog/oauth?client_id=${clientId}&redirect_uri=${redirectUri}&scope=pages_show_list,instagram_basic&response_type=code`;
     window.location.href = authUrl;
 });
+
 // Captura el código de autorización desde la URL
 const queryParams = new URLSearchParams(window.location.search);
 const authCode = queryParams.get('code');
@@ -21,14 +22,14 @@ if (authCode) {
 async function intercambiarPorToken(authCode) {
     const data = {
         client_id: clientId,
-        client_secret: 'e88790e677018b2ae062308cfea7eb5c', 
+        client_secret: 'e88790e677018b2ae062308cfea7eb5c', // ¡Solo para pruebas! Este client_secret debe ir al servidor en producción.
         grant_type: 'authorization_code',
         redirect_uri: redirectUri,
         code: authCode
     };
 
     try {
-        const response = await fetch('https://api.instagram.com/oauth/access_token', {
+        const response = await fetch('https://graph.facebook.com/v12.0/oauth/access_token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -51,21 +52,31 @@ async function intercambiarPorToken(authCode) {
 // Obtener métricas del usuario usando el token de acceso
 async function obtenerMetricas(accessToken) {
     try {
-        const url = `https://graph.instagram.com/me?fields=followers_count,media_count&access_token=${accessToken}`;
+        const url = `https://graph.facebook.com/v12.0/me/accounts?access_token=${accessToken}`;
         const response = await fetch(url);
         const data = await response.json();
 
-        if (data) {
-            console.log('Datos del usuario:', data);
+        if (data && data.data && data.data.length > 0) {
+            const instagramAccountId = data.data[0].id; // ID de la cuenta de Instagram vinculada
+            console.log('ID de la cuenta de Instagram:', instagramAccountId);
 
-            document.getElementById('followers').innerText = `Número de seguidores: ${data.followers_count}`;
-            document.getElementById('media').innerText = `Número de publicaciones: ${data.media_count}`;
+            // Obtener métricas de la cuenta de Instagram
+            const instagramUrl = `https://graph.facebook.com/v12.0/${instagramAccountId}?fields=followers_count,media_count&access_token=${accessToken}`;
+            const instagramResponse = await fetch(instagramUrl);
+            const instagramData = await instagramResponse.json();
+
+            if (instagramData) {
+                console.log('Datos del usuario de Instagram:', instagramData);
+
+                document.getElementById('followers').innerText = `Número de seguidores: ${instagramData.followers_count}`;
+                document.getElementById('media').innerText = `Número de publicaciones: ${instagramData.media_count}`;
+            } else {
+                console.error('Error al obtener los datos de Instagram:', instagramData);
+            }
         } else {
-            console.error('Error al obtener los datos del usuario:', data);
+            console.error('No se encontraron cuentas vinculadas:', data);
         }
     } catch (error) {
         console.error('Error al realizar la solicitud:', error);
     }
 }
-
-
