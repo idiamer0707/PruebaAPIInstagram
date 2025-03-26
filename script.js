@@ -21,18 +21,36 @@ function iniciarSesionInstagram() {
             console.error('Error en la autenticación');
         }
     }, { scope: 'instagram_basic' }); 
+}
 
 function obtenerMetricas(accessToken) {
-    FB.api('/me', { fields: 'followers_count,media_count' }, function(response) {
-        if (response) {
-            console.log('Datos del usuario:', response);
+    FB.api(
+        '/me/accounts', // Paso intermedio para obtener la cuenta de Instagram
+        { access_token: accessToken },
+        function(response) {
+            if (response && response.data && response.data.length > 0) {
+                const instagramAccountId = response.data[0].id; // ID de la cuenta vinculada
 
-            document.getElementById('followers').innerText = `Número de seguidores: ${response.followers_count}`;
-            document.getElementById('media').innerText = `Número de publicaciones: ${response.media_count}`;
-        } else {
-            console.error('Error al obtener los datos del usuario');
+                // Ahora obtenemos las métricas
+                FB.api(
+                    `/${instagramAccountId}`,
+                    { fields: 'followers_count,media_count', access_token: accessToken },
+                    function(instagramResponse) {
+                        if (instagramResponse) {
+                            console.log('Datos del usuario de Instagram:', instagramResponse);
+
+                            document.getElementById('followers').innerText = `Número de seguidores: ${instagramResponse.followers_count}`;
+                            document.getElementById('media').innerText = `Número de publicaciones: ${instagramResponse.media_count}`;
+                        } else {
+                            console.error('Error al obtener los datos de la cuenta de Instagram');
+                        }
+                    }
+                );
+            } else {
+                console.error('No se encontró una cuenta de Instagram vinculada');
+            }
         }
-    });
+    );
 }
 
 // Agregar evento al botón
