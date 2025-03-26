@@ -1,7 +1,7 @@
 // Inicialización del SDK de Facebook/Instagram
 window.fbAsyncInit = function() {
     FB.init({
-        appId: '24005084342427321', 
+        appId: '1010459561182497', 
         cookie: true,
         xfbml: true,
         version: 'v12.0' 
