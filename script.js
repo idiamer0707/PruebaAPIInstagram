@@ -23,18 +23,42 @@ function iniciarSesionInstagram() {
     }, { scope: 'instagram_basic' }); 
 }
 
+// Inicialización del SDK de Facebook/Instagram
+window.fbAsyncInit = function() {
+    FB.init({
+        appId: '1010459561182497', 
+        cookie: true,
+        xfbml: true,
+        version: 'v12.0' 
+    });
+    console.log('SDK de Instagram inicializado correctamente');
+};
+
+// Función para iniciar sesión y autenticar al usuario
+function iniciarSesionInstagram() {
+    FB.login(function(response) {
+        if (response.authResponse) {
+            console.log('Usuario autenticado:', response.authResponse);
+            const accessToken = response.authResponse.accessToken;
+
+            obtenerMetricas(accessToken);
+        } else {
+            console.error('Error en la autenticación');
+        }
+    }, { scope: 'instagram_basic' }); 
+}
+
 function obtenerMetricas(accessToken) {
     FB.api(
-        '/me/accounts', // Paso intermedio para obtener la cuenta de Instagram
-        { access_token: accessToken },
-        function(response) {
+        '/me/accounts',
+        function(response) { // El SDK usará el token global automáticamente
             if (response && response.data && response.data.length > 0) {
                 const instagramAccountId = response.data[0].id; // ID de la cuenta vinculada
 
                 // Ahora obtenemos las métricas
                 FB.api(
                     `/${instagramAccountId}`,
-                    { fields: 'followers_count,media_count', access_token: accessToken },
+                    { fields: 'followers_count,media_count' }, // Sin especificar access_token
                     function(instagramResponse) {
                         if (instagramResponse) {
                             console.log('Datos del usuario de Instagram:', instagramResponse);
@@ -53,6 +77,8 @@ function obtenerMetricas(accessToken) {
     );
 }
 
+
 // Agregar evento al botón
 document.getElementById('loginButton').addEventListener('click', iniciarSesionInstagram);
+
 
